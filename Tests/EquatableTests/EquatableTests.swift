@@ -9,19 +9,46 @@ import XCTest
 import EquatableMacros
 
 let testMacros: [String: Macro.Type] = [
-    "stringify": StringifyMacro.self,
+    "Equatable": EquatableExtensionMacro.self,
 ]
 #endif
 
 final class EquatableTests: XCTestCase {
-    func testMacro() throws {
+    func testEquatableMacroOnFinalClasses() throws {
         #if canImport(EquatableMacros)
+        
         assertMacroExpansion(
             """
-            #stringify(a + b)
+            @Equatable
+            final class Planet {
+                let name: String
+                let mass: Mass
+            
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
             """,
             expandedSource: """
-            (a + b, "a + b")
+            final class Planet {
+                let name: String
+                let mass: Mass
+
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
+
+            extension Planet: Equatable {
+                static func == (lhs: Planet, rhs: Planet) -> Bool {
+                    lhs.name == rhs.name &&
+                    lhs.mass == rhs.mass
+                }
+            }
             """,
             macros: testMacros
         )
@@ -29,16 +56,82 @@ final class EquatableTests: XCTestCase {
         throw XCTSkip("macros are only supported when running tests for the host platform")
         #endif
     }
-
-    func testMacroWithStringLiteral() throws {
+    
+    func testEquatableMacroOnActors() throws {
         #if canImport(EquatableMacros)
+        
         assertMacroExpansion(
-            #"""
-            #stringify("Hello, \(name)")
-            """#,
-            expandedSource: #"""
-            ("Hello, \(name)", #""Hello, \(name)""#)
-            """#,
+            """
+            @Equatable
+            actor Planet {
+                let name: String
+                let mass: Mass
+            
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
+            """,
+            expandedSource: """
+            actor Planet {
+                let name: String
+                let mass: Mass
+
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
+
+            extension Planet: Equatable {
+                static func == (lhs: Planet, rhs: Planet) -> Bool {
+                    lhs.name == rhs.name &&
+                    lhs.mass == rhs.mass
+                }
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+    
+    func testEquatableMacroOnStructs() throws {
+        #if canImport(EquatableMacros)
+        
+        assertMacroExpansion(
+            """
+            @Equatable
+            struct Planet {
+                let name: String
+                let mass: Mass
+            
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
+            """,
+            expandedSource: """
+            struct Planet {
+                let name: String
+                let mass: Mass
+
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "@Equatable can only be applied to final class or actor", line: 1, column: 1)
+            ],
             macros: testMacros
         )
         #else

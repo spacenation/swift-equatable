@@ -1,8 +1,15 @@
 import Equatable
 
-let a = 17
-let b = 25
+@Equatable
+final class Planet {
+    let name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+}
 
-let (result, code) = #stringify(a + b)
+let planet1 = Planet(name: "Mars")
+let planet2 = Planet(name: "Venus")
 
-print("The value \(result) was produced by the code \"\(code)\"")
+print("The value \(planet1 == planet2)")
