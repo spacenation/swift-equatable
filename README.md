@@ -6,23 +6,19 @@ This package automatically generates `Equatable` conformance for both classes an
 
 By conforming to `Equatable`, instances of your classes and actors can be easily compared for equality, which is useful for many operations such as sorting, searching, and maintaining collections. This package ensures that the generated `==` operator correctly compares all relevant properties of your classes and actors, providing a robust and efficient implementation.
 
-Note: Classes must be marked as final to use this package. This ensures that the synthesized `==` operator is accurate and efficient, as it does not need to account for potential subclassing.
+**Note**: Classes must be marked as final to use this package. This ensures that the synthesized `==` operator is accurate and efficient, as it does not need to account for potential subclassing.
 
 ## Usage
 
 Add `@Equatable` annotation to class or actor 
 
 ```swift
-import Example
+import Equatable
 
 @Equatable
 public final class Planet {
     let name: String
     let mass: Mass
-    
-    public init(name: String) {
-        self.name = name
-    }
 }
 
 /// Expands to
