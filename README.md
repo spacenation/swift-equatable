@@ -47,7 +47,7 @@ let package = Package(
             // name, etc.
             dependencies: [
                 // other dependencies
-                .product(name: "Equatable", package: "wift-equatable")
+                .product(name: "Equatable", package: "swift-equatable")
             ]
         )
         // other targets
