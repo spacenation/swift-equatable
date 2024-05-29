@@ -25,9 +25,12 @@ public enum EquatableExtensionMacro: ExtensionMacro {
             throw EquatableExtensionError.onlyApplicableToFinalClassOrActor
         }
         
+        let isPublic = declaration.modifiers.contains(where: { $0.name.tokenKind == .keyword(.public) })
+        let addModifiers = isPublic ? "public " : ""
+        
         return try [
             ExtensionDeclSyntax("extension \(type.trimmed): Equatable") {
-                try FunctionDeclSyntax("static func == (lhs: \(type.trimmed), rhs: \(type.trimmed)) -> Bool") {
+                try FunctionDeclSyntax("\(raw: addModifiers)static func == (lhs: \(type.trimmed), rhs: \(type.trimmed)) -> Bool") {
                     let properties = declaration.memberBlock.members
                         .compactMap { $0.decl.as(VariableDeclSyntax.self) }
                         .compactMap { $0.bindings.first?.as(PatternBindingSyntax.self) }

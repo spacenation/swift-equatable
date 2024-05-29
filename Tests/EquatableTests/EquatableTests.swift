@@ -57,6 +57,49 @@ final class EquatableTests: XCTestCase {
         #endif
     }
     
+    func testEquatableMacroOnPublicFinalClasses() throws {
+        #if canImport(EquatableMacros)
+        
+        assertMacroExpansion(
+            """
+            @Equatable
+            public final class Planet {
+                let name: String
+                let mass: Mass
+            
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
+            """,
+            expandedSource: """
+            public final class Planet {
+                let name: String
+                let mass: Mass
+
+                var this: String { "1" }
+                
+                init(name: String) {
+                    self.name = name
+                }
+            }
+
+            extension Planet: Equatable {
+                public static func == (lhs: Planet, rhs: Planet) -> Bool {
+                    lhs.name == rhs.name &&
+                    lhs.mass == rhs.mass
+                }
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+    
     func testEquatableMacroOnActors() throws {
         #if canImport(EquatableMacros)
         
